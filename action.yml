@@ -1,0 +1,34 @@
+name: 'Compile Project with Ravenshield SDK'
+description: 'Compile a specified project using the Ravenshield SDK at a given version'
+
+inputs:
+  projectName:
+    description: 'The name of the project to compile'
+    required: true
+  projectPath:
+    description: 'The path to the project to compile'
+    required: true
+  strip:
+    description: 'Make files smaller by stripping out unnecessary information'
+    required: false
+    default: 'true'
+  sdkVersion:
+    description: 'The version of the SDK to use'
+    required: true
+    default: '1.6'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download SDK Release
+      uses: robinraju/release-downloader@v1
+      with:
+        tag: '${{ inputs.sdkVersion }}'
+        fileName: 'sdk.zip'
+        repository: 'danpowell88/ravenshield-sdk'
+        extract: true
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+    - run: npm run compile ${{ inputs.projectName }} ${{ inputs.projectPath }} ${{ inputs.strip }}
+      shell: powershell
+
